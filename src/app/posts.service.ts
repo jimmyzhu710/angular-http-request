@@ -9,17 +9,16 @@ import { map } from 'rxjs/operators';
 
 export class PostService {
     constructor(private http: HttpClient) { }
-
+ 
     createAndStorePost(title: string, content: string) {
         const postData: Post = { title: title, content: content };
         // Send Http request
-        this.http.post<{ name: string }>(
+        return this.http.post<{ name: string }>(
             'https://angular-http-requests-6bec1.firebaseio.com/posts.json',
             postData
-        ).subscribe(responseData => {
-            console.log(responseData);
-        });
-    }
+        );
+    }     
+
 
     fetchPosts() {
         return this.http.get<{ [key: string]: Post }>('https://angular-http-requests-6bec1.firebaseio.com/posts.json')
@@ -32,5 +31,9 @@ export class PostService {
                 }
                 return postsArray;
             }));
+    }
+
+    deletePosts(){
+       return this.http.delete('https://angular-http-requests-6bec1.firebaseio.com/posts.json');
     }
 }
