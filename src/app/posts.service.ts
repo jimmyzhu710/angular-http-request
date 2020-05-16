@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpEventType } from '@angular/common/http';
 import { Subject, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 import { Post } from './post.model';
 
@@ -28,7 +28,10 @@ export class PostService {
         // Send Http request
         this.http.post<{ name: string }>(
             'https://angular-http-requests-6bec1.firebaseio.com/posts.json',
-            postData
+            postData,
+            {
+                observe: 'response'
+            }
         ).subscribe(responseData => {
             console.log(responseData);
         }, error => {
@@ -36,7 +39,6 @@ export class PostService {
         }
         );
     }
-
 
     fetchPosts() {
         let searchParams = new HttpParams();
@@ -67,6 +69,19 @@ export class PostService {
     }
 
     deletePosts() {
-        return this.http.delete('https://angular-http-requests-6bec1.firebaseio.com/posts.json');
+        return this.http.delete('https://angular-http-requests-6bec1.firebaseio.com/posts.json',
+        {
+            observe: 'events'
+        }).pipe(
+            tap(event=>{
+                //console.log(event);
+                if(event.type === HttpEventType.Response){
+                    console.log(event.body);
+                }
+                if(event.type === HttpEventType.Sent){
+                   //
+                }
+            })
+        );
     }
 }
