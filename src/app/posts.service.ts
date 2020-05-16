@@ -48,10 +48,11 @@ export class PostService {
         return this.http.get<{ [key: string]: Post }>(
             'https://angular-http-requests-6bec1.firebaseio.com/posts.json',
             {
-                headers: new HttpHeaders({'Customer-Header': 'Hello'}),
-                params: searchParams
+                headers: new HttpHeaders({ 'Customer-Header': 'Hello' }),
+                params: searchParams,
+                responseType: 'json'                
             }
-            )
+        )
             .pipe(map((responseData) => {
                 const postsArray: Post[] = [];
                 for (const key in responseData) {
@@ -61,27 +62,28 @@ export class PostService {
                 }
                 return postsArray;
             }),
-            catchError(errorResponse=>{
-                // Send to analytics server
-                return throwError(errorResponse);
-            })
+                catchError(errorResponse => {
+                    // Send to analytics server
+                    return throwError(errorResponse);
+                })
             );
     }
 
     deletePosts() {
         return this.http.delete('https://angular-http-requests-6bec1.firebaseio.com/posts.json',
-        {
-            observe: 'events'
-        }).pipe(
-            tap(event=>{
-                //console.log(event);
-                if(event.type === HttpEventType.Response){
-                    console.log(event.body);
-                }
-                if(event.type === HttpEventType.Sent){
-                   //
-                }
-            })
-        );
+            {
+                observe: 'events',
+                responseType: 'text'
+            }).pipe(
+                tap(event => {
+                    console.log(event);
+                    if (event.type === HttpEventType.Response) {
+                        console.log(event.body);
+                    }
+                    if (event.type === HttpEventType.Sent) {
+                        //
+                    }
+                })
+            );
     }
 }
